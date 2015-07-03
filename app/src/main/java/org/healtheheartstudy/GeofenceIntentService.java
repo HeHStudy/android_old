@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
 import com.google.android.gms.location.Geofence;
@@ -31,6 +32,8 @@ public class GeofenceIntentService extends IntentService {
             Timber.e("Geofence error code: " + gEvent.getErrorCode());
         } else if (gEvent.getGeofenceTransition() == Geofence.GEOFENCE_TRANSITION_DWELL) {
             List<Geofence> places = gEvent.getTriggeringGeofences();
+
+            // Build notification
             buildNotification(places);
         } else {
             Timber.e("Geofences were triggered with wrong transitions");
@@ -57,7 +60,12 @@ public class GeofenceIntentService extends IntentService {
         Intent displayIntent = new Intent(this, MainActivity.class);
         displayIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         displayIntent.putExtra(Constants.INTENT_HOSPITAL_NAME, intentExtra);
-        PendingIntent displayPendingIntent = PendingIntent.getActivity(this, 0, displayIntent, 0);
+        PendingIntent displayPendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                displayIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
 
         NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_media_pause)
@@ -69,6 +77,11 @@ public class GeofenceIntentService extends IntentService {
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         notificationManager.notify(1, notifBuilder.build());
+
+        // Send broadcast to service to remove geofence
+        Intent removeFenceIntent = new Intent(Constants.INTENT_REMOVE_GEOFENCE);
+        removeFenceIntent.putExtra(Constants.INTENT_HOSPITAL_NAME, intentExtra);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(removeFenceIntent);
     }
 
 }

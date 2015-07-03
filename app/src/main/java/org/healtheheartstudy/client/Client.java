@@ -39,7 +39,6 @@ public class Client implements GoogleApiClient.ConnectionCallbacks, GoogleApiCli
 
     @Override
     public void onConnectionSuspended(int i) {
-        connect(context, api);
     }
 
     @Override

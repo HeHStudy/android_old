@@ -12,6 +12,8 @@ import org.healtheheartstudy.network.RequestManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import timber.log.Timber;
+
 /**
  * HospitalHelper retrieves all hospitals that are within a provided range of a provided location
  * by using Google Places Search API (not a client API--need to use web API).
@@ -102,6 +104,7 @@ public class HospitalHelper implements Response.Listener<PlaceSearchResult>, Res
      */
     @Override
     public void onErrorResponse(VolleyError error) {
+        Timber.d("Network error: " + error.getMessage());
         // TODO: do something here
     }
 }
