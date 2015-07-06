@@ -1,11 +1,15 @@
 package org.healtheheartstudy;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
-import android.view.View;
 import android.widget.Button;
 
 import timber.log.Timber;
@@ -20,24 +24,23 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mButton = (Button) findViewById(R.id.main_button);
-        if (HospitalTrackingService.IS_ALIVE) mButton.setText("Turn tracking off");
-        else mButton.setText("Turn tracking on");
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean alarmSet = prefs.getBoolean(Constants.KEY_ALARM_SET, false);
+        if (!alarmSet) {
+            // Create pending intent for service
+            Intent serviceIntent = new Intent(this, HospitalTrackingService.class);
+            serviceIntent.putExtra(Constants.KEY_SERVICE_ACTION, Constants.VALUE_SERVICE_CREATE_GEOFENCES);
+            PendingIntent pi = PendingIntent.getService(this, 0, serviceIntent, 0);
 
-        String hospitalName = getIntent().getStringExtra(Constants.INTENT_HOSPITAL_NAME);
-        if (hospitalName != null) displaySurvey(hospitalName);
-    }
+            // Set alarm
+            AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0, AlarmManager.INTERVAL_DAY, pi);
 
-    public void buttonClick(View v) {
-        if (HospitalTrackingService.IS_ALIVE) {
-            Intent service = new Intent(this, HospitalTrackingService.class);
-            stopService(service);
-            mButton.setText("Turn tracking on");
-        } else {
-            Intent service = new Intent(this, HospitalTrackingService.class);
-            startService(service);
-            mButton.setText("Turn tracking off");
+            prefs.edit().putBoolean(Constants.KEY_ALARM_SET, true).apply();
         }
+
+        String hospitalName = getIntent().getStringExtra(Constants.KEY_HOSPITAL_NAME);
+        if (hospitalName != null) displaySurvey(hospitalName);
     }
 
     private void displaySurvey(String hospitalName) {
@@ -66,7 +69,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         Timber.d("onNewIntent()");
-        String hospitalName = intent.getStringExtra(Constants.INTENT_HOSPITAL_NAME);
+        String hospitalName = intent.getStringExtra(Constants.KEY_HOSPITAL_NAME);
         if (hospitalName != null) displaySurvey(hospitalName);
     }
 

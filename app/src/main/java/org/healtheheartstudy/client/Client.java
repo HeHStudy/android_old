@@ -12,13 +12,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
  */
 public class Client implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-    private Context context;
-    private Api api;
     protected GoogleApiClient mGoogleApiClient;
 
     protected synchronized void connect(Context context, Api api) {
-        this.context = context;
-        this.api = api;
         if (mGoogleApiClient == null || !mGoogleApiClient.isConnected()) {
             mGoogleApiClient = new GoogleApiClient.Builder(context)
                     .addConnectionCallbacks(this)
