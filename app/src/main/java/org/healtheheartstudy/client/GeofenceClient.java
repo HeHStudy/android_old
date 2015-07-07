@@ -140,42 +140,6 @@ public class GeofenceClient extends Client implements LocationListener {
                     .build();
             mGeofences.add(gf);
         }
-        Geofence ch = new Geofence.Builder()
-                .setRequestId("chapterhouse")
-                .setCircularRegion(
-                        39.941976,
-                        -75.157326,
-                        GEOFENCE_RADIUS_METERS)
-                .setExpirationDuration(GEOFENCE_EXPIRE_TIME_MILLIS)
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL)
-                .setLoiteringDelay(GEOFENCE_LOITER_TIME_MILLIS)
-                .build();
-        mGeofences.add(ch);
-
-        Geofence gym = new Geofence.Builder()
-                .setRequestId("gym")
-                .setCircularRegion(
-                        39.948934,
-                        -75.164648,
-                        GEOFENCE_RADIUS_METERS)
-                .setExpirationDuration(GEOFENCE_EXPIRE_TIME_MILLIS)
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL)
-                .setLoiteringDelay(GEOFENCE_LOITER_TIME_MILLIS)
-                .build();
-        mGeofences.add(gym);
-
-        Geofence home = new Geofence.Builder()
-                .setRequestId("home")
-                .setCircularRegion(
-                        39.934400,
-                        -75.161308,
-                        GEOFENCE_RADIUS_METERS)
-                .setExpirationDuration(GEOFENCE_EXPIRE_TIME_MILLIS)
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL)
-                .setLoiteringDelay(GEOFENCE_LOITER_TIME_MILLIS)
-                .build();
-        mGeofences.add(home);
-
         Timber.d("Finished populating geofences. Number of fences add: " + mGeofences.size());
     }
 
