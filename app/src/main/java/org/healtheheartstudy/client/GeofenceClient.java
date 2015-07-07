@@ -24,16 +24,14 @@ import java.util.List;
 import timber.log.Timber;
 
 /**
- * GeofenceClient provides an easy-to-use interface for creating geofences and retrieving a user's
+ * GeofenceClient provides an interface for creating geofences and retrieving a user's
  * location.
  */
 public class GeofenceClient extends Client implements LocationListener {
 
     private static final int GEOFENCE_RADIUS_METERS = 100;
-//    private static final int GEOFENCE_LOITER_TIME_MILLIS = 1000 * 60 * 5;
-    private static final int GEOFENCE_LOITER_TIME_MILLIS = 1000 * 30;
+    private static final int GEOFENCE_LOITER_TIME_MILLIS = 1000 * 60 * 5;
     private static final int GEOFENCE_EXPIRE_TIME_MILLIS = 1000 * 60 * 60 * 24;
-
     private static final int TWO_MINUTES_MILLIS = 1000 * 60 * 2;
 
     private List<Geofence> mGeofences;
@@ -177,7 +175,6 @@ public class GeofenceClient extends Client implements LocationListener {
                 .setLoiteringDelay(GEOFENCE_LOITER_TIME_MILLIS)
                 .build();
         mGeofences.add(home);
-
 
         Timber.d("Finished populating geofences. Number of fences add: " + mGeofences.size());
     }

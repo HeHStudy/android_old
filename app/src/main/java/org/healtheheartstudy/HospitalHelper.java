@@ -15,8 +15,8 @@ import java.util.List;
 import timber.log.Timber;
 
 /**
- * HospitalHelper retrieves all hospitals that are within a provided range of a provided location
- * by using Google Places Search API (not a client API--need to use web API).
+ * HospitalHelper retrieves all hospitals that are within a provided radius of a provided location
+ * by using Google Places Search API (web API).
  */
 public class HospitalHelper implements Response.Listener<PlaceSearchResult>, Response.ErrorListener {
 
@@ -32,7 +32,7 @@ public class HospitalHelper implements Response.Listener<PlaceSearchResult>, Res
 
     /**
      * Launches a request to retrieve hospitals that are within the provided radius
-     * away from the provided location. This is a public helper function.
+     * away from the provided location.
      * @param location The area to find hospitals in.
      * @param radius The search radius in meters.
      * @param listener The callback for when hospitals are found.

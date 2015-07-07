@@ -16,7 +16,7 @@ import java.util.List;
 import timber.log.Timber;
 
 /**
- * HospitalTrackingService performs two tasks:
+ * HospitalTrackingService is started to perform one of two tasks:
  *
  * a. Build geofences around nearby hospitals
  *      1) Retrieve the user's location
@@ -26,12 +26,12 @@ import timber.log.Timber;
  *
  * b. Remove a geofence after it has been triggered
  *
- * An alarm will prompt the service will perform task (a) every 24 hours. This is to ensure that
+ * An alarm will prompt the service to perform task (a) every 24 hours. This is to ensure that
  * we account for any major location changes from the user and to (re)create any geofences that
  * may have been triggered.
  *
  * Triggered geofences are removed for 1 day because it is unlikely that a user visits a hospital
- * multiple times in a day, and we don't want to annoy the user.
+ * multiple times in a day.
  *
  * After the service performs a task, it is shut down so that no additional resources are consumed.
  * Although the service shuts down, the geofences will continue to be tracked in the background.

@@ -8,7 +8,7 @@ import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 /**
- * Client is a wrapper to easily use GoogleApiClient.
+ * Client is a simple GoogleApiClient wrapper.
  */
 public class Client implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -39,6 +39,5 @@ public class Client implements GoogleApiClient.ConnectionCallbacks, GoogleApiCli
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-
     }
 }

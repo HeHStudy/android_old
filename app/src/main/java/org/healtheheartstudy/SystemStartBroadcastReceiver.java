@@ -9,7 +9,7 @@ import android.content.Intent;
 import timber.log.Timber;
 
 /**
- * Created by dannypark on 7/2/15.
+ * SystemStartBroadcastReceiver is triggered when the device boots up.
  */
 public class SystemStartBroadcastReceiver extends BroadcastReceiver {
 

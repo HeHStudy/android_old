@@ -10,20 +10,18 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
-import android.widget.Button;
 
 import timber.log.Timber;
 
 
 public class MainActivity extends ActionBarActivity {
 
-    private Button mButton;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Set the alarm if this is the first time opening the app
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean alarmSet = prefs.getBoolean(Constants.KEY_ALARM_SET, false);
         if (!alarmSet) {
