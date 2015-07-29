@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "org.healtheheartstudy"
-        minSdkVersion 9
+        minSdkVersion 10
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
@@ -26,4 +26,5 @@ dependencies {
     compile 'com.mcxiaoke.volley:library:1.0.+'
     compile 'com.google.code.gson:gson:2.2.+'
     compile 'com.jakewharton.timber:timber:3.1.0'
+    compile 'com.scottyab:secure-preferences-lib:0.1.3'
 }

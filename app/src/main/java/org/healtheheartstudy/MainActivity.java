@@ -1,15 +1,14 @@
 package org.healtheheartstudy;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
+import android.view.View;
+
+import com.securepreferences.SecurePreferences;
 
 import timber.log.Timber;
 
@@ -21,24 +20,21 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Set the alarm if this is the first time opening the app
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean alarmSet = prefs.getBoolean(Constants.KEY_ALARM_SET, false);
-        if (!alarmSet) {
-            // Create pending intent for service
-            Intent serviceIntent = new Intent(this, HospitalTrackingService.class);
-            serviceIntent.putExtra(Constants.KEY_SERVICE_ACTION, Constants.VALUE_SERVICE_CREATE_GEOFENCES);
-            PendingIntent pi = PendingIntent.getService(this, 0, serviceIntent, 0);
+        // Create geofences if this is the first time opening the app
+        SharedPreferences prefs = new SecurePreferences(getApplicationContext());
+        boolean firstOpen = prefs.getBoolean(Constants.KEY_FIRST_APP_OPEN, true);
+        if (firstOpen) {
+            // Launch hospitalization
+            Intent serviceIntent = new Intent(this, HospitalizationService.class);
+            serviceIntent.putExtra(Constants.KEY_SERVICE_ACTION, Constants.ACTION_CREATE_GEOFENCES);
+            startService(serviceIntent);
 
-            // Set alarm
-            AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0, AlarmManager.INTERVAL_DAY, pi);
+            // Start alarm to check user's location every day
+            AlarmHelper ah = new AlarmHelper(this, Constants.ACTION_CHECK_LOCATION);
+            ah.setRepeating(AlarmHelper.ONE_DAY, AlarmHelper.ONE_DAY);
 
-            prefs.edit().putBoolean(Constants.KEY_ALARM_SET, true).apply();
+            prefs.edit().putBoolean(Constants.KEY_FIRST_APP_OPEN, false).apply();
         }
-
-        String hospitalName = getIntent().getStringExtra(Constants.KEY_HOSPITAL_NAME);
-        if (hospitalName != null) displaySurvey(hospitalName);
     }
 
     private void displaySurvey(String hospitalName) {
@@ -51,12 +47,21 @@ public class MainActivity extends ActionBarActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
+                        removeSurvey();
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
+                        removeSurvey();
+                    }
+                })
+                .setNeutralButton("Foo", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        removeSurvey();
                     }
                 })
                 .setCancelable(false)
@@ -64,15 +69,50 @@ public class MainActivity extends ActionBarActivity {
         builder.show();
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        Timber.d("onNewIntent()");
+    /**
+     * Checks if the app was opened from a notification, in which case we need to present
+     * a survey to the user. We also check SharedPreferences in case the user cleared
+     * the notification.
+     * @param intent
+     */
+    private void checkForSurvey(Intent intent) {
         String hospitalName = intent.getStringExtra(Constants.KEY_HOSPITAL_NAME);
-        if (hospitalName != null) displaySurvey(hospitalName);
+        if (hospitalName != null) {
+            Timber.d("Intent was not null");
+            displaySurvey(hospitalName);
+        } else {
+            SharedPreferences prefs = new SecurePreferences(getApplicationContext());
+            hospitalName = prefs.getString(Constants.KEY_SURVEY, null);
+            if (hospitalName != null) {
+                Timber.d("SharedPrefs --> KEY_SURVEY was not null");
+                displaySurvey(hospitalName);
+            }
+        }
+    }
+
+    /**
+     * Removes survey from SharedPreferences.
+     */
+    private void removeSurvey() {
+        SharedPreferences prefs = new SecurePreferences(getApplicationContext());
+        prefs.edit().putString(Constants.KEY_SURVEY, null).apply();
+    }
+
+    public void restartService(View v) {
+        Intent serviceIntent = new Intent(this, HospitalizationService.class);
+        serviceIntent.putExtra(Constants.KEY_SERVICE_ACTION, Constants.ACTION_CREATE_GEOFENCES);
+        startService(serviceIntent);
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    protected void onNewIntent(Intent intent) {
+        Timber.d("onNewIntent()");
+        checkForSurvey(intent);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        checkForSurvey(getIntent());
     }
 }

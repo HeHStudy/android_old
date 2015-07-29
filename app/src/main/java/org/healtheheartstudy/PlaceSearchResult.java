@@ -32,6 +32,7 @@ public class PlaceSearchResult {
         return next_page_token;
     }
 
+
     public class Place {
 
         public Geometry geometry;
@@ -59,20 +60,39 @@ public class PlaceSearchResult {
             return location;
         }
 
+        public void setLocation(Double lat, Double lng) {
+            geometry = new Geometry(lat, lng);
+        }
+
         class Geometry {
+
             Location location;
+
             Geometry() {
                 location = new Location();
             }
+
+            Geometry(Double lat, Double lng) {
+                this.location = new Location(lat, lng);
+            }
+
         }
 
         class Location {
+
             double lat;
             double lng;
+
             Location() {
                 lat = 0.0;
                 lng = 0.0;
             }
+
+            Location(Double lat, Double lng) {
+                this.lat = lat;
+                this.lng = lng;
+            }
+
         }
 
     }

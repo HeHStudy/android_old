@@ -20,6 +20,7 @@ import timber.log.Timber;
  */
 public class HospitalHelper implements Response.Listener<PlaceSearchResult>, Response.ErrorListener {
 
+    public static final int DEFAULT_SEARCH_RADIUS = 10000;
     private static final String API_KEY = "AIzaSyALHFB5BA3emjybU9ZrPUCLDEcCyC37vjk";
     private static final String API_ROOT = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=" + API_KEY;
 

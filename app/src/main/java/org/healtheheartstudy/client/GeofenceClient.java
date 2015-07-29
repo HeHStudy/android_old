@@ -30,14 +30,12 @@ import timber.log.Timber;
 public class GeofenceClient extends Client implements LocationListener {
 
     private static final int GEOFENCE_RADIUS_METERS = 100;
-    private static final int GEOFENCE_LOITER_TIME_MILLIS = 1000 * 60 * 5;
-    private static final int GEOFENCE_EXPIRE_TIME_MILLIS = 1000 * 60 * 60 * 24;
+    private static final int GEOFENCE_LOITER_TIME_MILLIS = 1000 * 60 * 60 * 5;
     private static final int TWO_MINUTES_MILLIS = 1000 * 60 * 2;
 
     private List<Geofence> mGeofences;
     private PendingIntent mGeofencePendingIntent;
     private Context context;
-    private List<PlaceSearchResult.Place> mPlaces;
     private Location mCurrentLocation;
     private Listener mListener;
 
@@ -74,10 +72,10 @@ public class GeofenceClient extends Client implements LocationListener {
      * Handles the creation and setting of geofences.
      * @param places
      */
-    public void createGeofences(List<PlaceSearchResult.Place> places, ResultCallback<Status> callback) {
+    public void createGeofences(List<PlaceSearchResult.Place> places, int transitionType,
+                                ResultCallback<Status> callback) {
         Timber.d("Creating geofences");
-        mPlaces = places;
-        populateGeofenceList();
+        populateGeofenceList(transitionType, places);
         LocationServices.GeofencingApi.addGeofences(
                 mGoogleApiClient,
                 getGeofencingRequest(),
@@ -126,19 +124,28 @@ public class GeofenceClient extends Client implements LocationListener {
         return mGeofencePendingIntent;
     }
 
-    private void populateGeofenceList() {
-        for (PlaceSearchResult.Place place : mPlaces) {
-            Geofence gf = new Geofence.Builder()
+    /**
+     * Creates an array of geofences
+     * @param transitionType The transition type for the trigger.
+     */
+    private void populateGeofenceList(int transitionType, List<PlaceSearchResult.Place> places) {
+        for (PlaceSearchResult.Place place : places) {
+            Geofence.Builder builder = new Geofence.Builder()
                     .setRequestId(place.name)
                     .setCircularRegion(
                             place.getLocation().getLatitude(),
                             place.getLocation().getLongitude(),
-                            GEOFENCE_RADIUS_METERS)
-                    .setExpirationDuration(GEOFENCE_EXPIRE_TIME_MILLIS)
-                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL)
-                    .setLoiteringDelay(GEOFENCE_LOITER_TIME_MILLIS)
-                    .build();
-            mGeofences.add(gf);
+                            GEOFENCE_RADIUS_METERS
+                    )
+                    .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                    .setTransitionTypes(transitionType);
+
+            // Set loiter time if it is a DWELL trigger
+            if (transitionType == Geofence.GEOFENCE_TRANSITION_DWELL) {
+                builder.setLoiteringDelay(GEOFENCE_LOITER_TIME_MILLIS);
+            }
+
+            mGeofences.add(builder.build());
         }
         Timber.d("Finished populating geofences. Number of fences add: " + mGeofences.size());
     }

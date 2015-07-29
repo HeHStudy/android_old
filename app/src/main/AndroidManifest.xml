@@ -23,14 +23,14 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".SystemStartBroadcastReceiver" >
+        <receiver android:name=".CustomBroadcastReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
         <service
-            android:name=".HospitalTrackingService"
+            android:name=".HospitalizationService"
             android:enabled="true"
             android:exported="false" >
         </service>
