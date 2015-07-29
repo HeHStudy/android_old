@@ -30,7 +30,7 @@ import timber.log.Timber;
 public class GeofenceClient extends Client implements LocationListener {
 
     private static final int GEOFENCE_RADIUS_METERS = 100;
-    private static final int GEOFENCE_LOITER_TIME_MILLIS = 1000 * 60 * 60 * 5;
+    private static final int GEOFENCE_LOITER_TIME_MILLIS = 1000 * 60 * 60 * 4;
     private static final int TWO_MINUTES_MILLIS = 1000 * 60 * 2;
 
     private List<Geofence> mGeofences;
