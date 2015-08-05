@@ -20,4 +20,11 @@ public class Constants {
     public static final String ACTION_SURVEY_ALARM = "survey_alarm";
     public static final String ACTION_CHECK_LOCATION = "check_location";
 
+    public static final long ONE_HOUR_MILLIS = 1000 * 60 * 60;
+    public static final long ONE_DAY_MILLIS = ONE_HOUR_MILLIS * 24;
+    public static final int TWO_MINUTES_MILLIS = 1000 * 60 * 2;
+
+    public static final int GEOFENCE_RADIUS_METERS = 100;
+    public static final int GEOFENCE_LOITER_TIME_MILLIS = 1000 * 60 * 60 * 4;
+
 }

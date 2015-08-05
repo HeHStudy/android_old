@@ -14,6 +14,7 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import org.healtheheartstudy.Constants;
 import org.healtheheartstudy.GeofenceIntentService;
 import org.healtheheartstudy.PlaceSearchResult;
 
@@ -28,10 +29,6 @@ import timber.log.Timber;
  * location.
  */
 public class GeofenceClient extends Client implements LocationListener {
-
-    private static final int GEOFENCE_RADIUS_METERS = 100;
-    private static final int GEOFENCE_LOITER_TIME_MILLIS = 1000 * 60 * 60 * 4;
-    private static final int TWO_MINUTES_MILLIS = 1000 * 60 * 2;
 
     private List<Geofence> mGeofences;
     private PendingIntent mGeofencePendingIntent;
@@ -107,6 +104,19 @@ public class GeofenceClient extends Client implements LocationListener {
         );
     }
 
+    /**
+     * Removes all geofences with a success/error callback.
+     * @param callback
+     */
+    public void removeAllFences(ResultCallback<Status> callback) {
+        Timber.d("Removing all fences");
+        mGeofences.clear();
+        LocationServices.GeofencingApi.removeGeofences(
+                mGoogleApiClient,
+                getGeofencePendingIntent()
+        ).setResultCallback(callback);
+    }
+
     private GeofencingRequest getGeofencingRequest() {
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
         builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_DWELL);
@@ -135,14 +145,14 @@ public class GeofenceClient extends Client implements LocationListener {
                     .setCircularRegion(
                             place.getLocation().getLatitude(),
                             place.getLocation().getLongitude(),
-                            GEOFENCE_RADIUS_METERS
+                            Constants.GEOFENCE_RADIUS_METERS
                     )
                     .setExpirationDuration(Geofence.NEVER_EXPIRE)
                     .setTransitionTypes(transitionType);
 
             // Set loiter time if it is a DWELL trigger
             if (transitionType == Geofence.GEOFENCE_TRANSITION_DWELL) {
-                builder.setLoiteringDelay(GEOFENCE_LOITER_TIME_MILLIS);
+                builder.setLoiteringDelay(Constants.GEOFENCE_LOITER_TIME_MILLIS);
             }
 
             mGeofences.add(builder.build());
@@ -162,8 +172,8 @@ public class GeofenceClient extends Client implements LocationListener {
         }
 
         long timeDelta = newLocation.getTime() - mCurrentLocation.getTime();
-        boolean isMuchNewer = timeDelta > TWO_MINUTES_MILLIS;
-        boolean isMuchOlder = timeDelta < -TWO_MINUTES_MILLIS;
+        boolean isMuchNewer = timeDelta > Constants.TWO_MINUTES_MILLIS;
+        boolean isMuchOlder = timeDelta < -Constants.TWO_MINUTES_MILLIS;
         boolean isNewer = timeDelta > 0;
 
         if (isMuchNewer) {

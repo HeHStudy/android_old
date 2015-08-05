@@ -31,7 +31,7 @@ public class MainActivity extends ActionBarActivity {
 
             // Start alarm to check user's location every day
             AlarmHelper ah = new AlarmHelper(this, Constants.ACTION_CHECK_LOCATION);
-            ah.setRepeating(AlarmHelper.ONE_DAY, AlarmHelper.ONE_DAY);
+            ah.setRepeating(Constants.ONE_DAY_MILLIS, Constants.ONE_DAY_MILLIS);
 
             prefs.edit().putBoolean(Constants.KEY_FIRST_APP_OPEN, false).apply();
         }

@@ -25,10 +25,10 @@ public class CustomBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Timber.d("CustomBroadcastReceiver triggered from bootup");
         String action = intent.getAction();
         if (action != null) {
             if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
+                Timber.d("BOOT COMPLETED");
                 // Create geofences
                 Intent serviceIntent = new Intent(context, HospitalizationService.class);
                 serviceIntent.putExtra(Constants.KEY_SERVICE_ACTION, Constants.ACTION_CREATE_GEOFENCES);
@@ -36,12 +36,13 @@ public class CustomBroadcastReceiver extends BroadcastReceiver {
 
                 // Start alarm to check user's location every day
                 AlarmHelper ah = new AlarmHelper(context, Constants.ACTION_CHECK_LOCATION);
-                ah.setRepeating(AlarmHelper.ONE_DAY, AlarmHelper.ONE_DAY);
+                ah.setRepeating(Constants.ONE_DAY_MILLIS, Constants.ONE_DAY_MILLIS);
             } else if (action.equals(Constants.ACTION_SURVEY_ALARM)) {
-                Timber.d("CustomBroadcastReceiver triggered from alarm");
+                Timber.d("ALARM TRIGGERED FOR SURVEY");
                 String hospitalName = intent.getStringExtra(Constants.KEY_HOSPITAL_NAME);
                 buildNotification(context, hospitalName);
             } else if (action.equals(Constants.ACTION_CHECK_LOCATION)) {
+                Timber.d("ALARM TRIGGERED FOR CHECK LOCATION");
                 Intent serviceIntent = new Intent(context, HospitalizationService.class);
                 serviceIntent.putExtra(Constants.KEY_SERVICE_ACTION, action);
                 context.startService(serviceIntent);

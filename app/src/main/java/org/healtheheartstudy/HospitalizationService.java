@@ -80,7 +80,7 @@ public class HospitalizationService extends Service implements
         action = mIntent.getStringExtra(Constants.KEY_SERVICE_ACTION);
         if (action.equals(Constants.ACTION_CREATE_GEOFENCES) || action.equals(Constants.ACTION_CHECK_LOCATION)) {
             Timber.d("CREATE_GEOFENCES or CHECK_LOCATION");
-            // Instead of getting lastKnownLocation, request a single location update for more precision
+            // Instead of getting lastKnownLocation, request a single location update for better accuracy
             LocationRequest mLocationRequest = new LocationRequest();
             mLocationRequest.setInterval(1000 * 60);
             mLocationRequest.setFastestInterval(1000);
@@ -162,12 +162,22 @@ public class HospitalizationService extends Service implements
         }
     }
 
+    /**
+     * Serves as a callback for when hospitals in the area are found. We want to create the
+     * geofences once we have the hospitals.
+     * @param hospitals
+     */
     @Override
     public void onHospitalsFound(final List<PlaceSearchResult.Place> hospitals) {
         Timber.d("Hospitals found: " + hospitals.size());
-        // First remove any existing geofences and then create geofences around the hospitals
-        mGeofenceClient.removeAllFences();
-        mGeofenceClient.createGeofences(hospitals, Geofence.GEOFENCE_TRANSITION_DWELL, this);
+        // Remove any existing geofences before creating new ones.
+        mGeofenceClient.removeAllFences(new ResultCallback<Status>() {
+            @Override
+            public void onResult(Status status) {
+                Timber.d("Finished removing fences");
+                mGeofenceClient.createGeofences(hospitals, Geofence.GEOFENCE_TRANSITION_DWELL, HospitalizationService.this);
+            }
+        });
     }
 
     /**

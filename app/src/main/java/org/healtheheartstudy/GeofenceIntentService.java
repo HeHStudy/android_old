@@ -46,7 +46,7 @@ public class GeofenceIntentService extends IntentService {
                 Timber.d("EXIT was triggered. Starting timer now");
                 AlarmHelper ah = new AlarmHelper(this, Constants.ACTION_SURVEY_ALARM);
                 ah.putExtra(Constants.KEY_HOSPITAL_NAME, placeName);
-                ah.set(AlarmHelper.ONE_HOUR);
+                ah.set(Constants.ONE_HOUR_MILLIS);
             }
         }
     }

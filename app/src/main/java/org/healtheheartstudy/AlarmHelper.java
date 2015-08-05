@@ -11,9 +11,6 @@ import android.os.SystemClock;
  */
 public class AlarmHelper {
 
-    public static final long ONE_HOUR = 1000 * 60 * 60;
-    public static final long ONE_DAY = ONE_HOUR * 24;
-
     private Context context;
     private Intent intent;
 
