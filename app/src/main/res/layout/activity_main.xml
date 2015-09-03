@@ -14,4 +14,14 @@
         android:onClick="restartService"
         />
 
+    <Button
+        android:id="@+id/survey_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_below="@id/main_button"
+        android:text="Display dummy survey"
+        android:onClick="displayDummySurvey"
+        />
+
 </RelativeLayout>

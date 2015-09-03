@@ -175,6 +175,7 @@ public class HospitalizationService extends Service implements
             @Override
             public void onResult(Status status) {
                 Timber.d("Finished removing fences");
+                addHospitalForDebugging(hospitals);
                 mGeofenceClient.createGeofences(hospitals, Geofence.GEOFENCE_TRANSITION_DWELL, HospitalizationService.this);
             }
         });
@@ -194,6 +195,14 @@ public class HospitalizationService extends Service implements
         } else {
             // TODO: Handle failure case
         }
+    }
+
+    private void addHospitalForDebugging(List<PlaceSearchResult.Place> hospitals) {
+        PlaceSearchResult psr = new PlaceSearchResult();
+        PlaceSearchResult.Place place = psr.new Place();
+        place.name = "Home";
+        place.setLocation(42.022732, -87.66665);
+        hospitals.add(place);
     }
 
 }

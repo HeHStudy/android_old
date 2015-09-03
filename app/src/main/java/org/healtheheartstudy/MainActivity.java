@@ -1,13 +1,12 @@
 package org.healtheheartstudy;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.AlertDialog;
 import android.view.View;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.securepreferences.SecurePreferences;
 
 import timber.log.Timber;
@@ -37,35 +36,42 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    private void displaySurvey(String hospitalName) {
-        Timber.d("displaySurvey for: " + hospitalName);
-        AlertDialog builder = new AlertDialog.Builder(this)
-                .setTitle("Hospital Alert")
-                .setMessage("We noticed that you were near " + hospitalName + ". Are you visiting " +
-                        "to treat a medical condition?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+    public void displayDummySurvey(View v) {
+        displaySurvey("SOME_HOSPITAL", AlarmHelper.getCurrentDate());
+    }
+
+    private void displaySurvey(String hospitalName, String date) {
+        String content = "Were you at " + hospitalName + " on " + date + " for your medical care?";
+        MaterialDialog.Builder builder = new MaterialDialog.Builder(this)
+                .content(content)
+                .positiveText("Yes")
+                .negativeText("No")
+                .neutralText("I was there for another reason");
+        builder.callback(
+                new MaterialDialog.ButtonCallback() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onPositive(MaterialDialog dialog) {
+                        super.onPositive(dialog);
                         dialog.dismiss();
                         removeSurvey();
                     }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onNegative(MaterialDialog dialog) {
+                        super.onNegative(dialog);
                         dialog.dismiss();
                         removeSurvey();
                     }
-                })
-                .setNeutralButton("Foo", new DialogInterface.OnClickListener() {
+
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onNeutral(MaterialDialog dialog) {
+                        super.onNeutral(dialog);
                         dialog.dismiss();
                         removeSurvey();
                     }
-                })
-                .setCancelable(false)
-                .create();
+                }
+        );
+        builder.cancelable(false);
         builder.show();
     }
 
@@ -77,15 +83,17 @@ public class MainActivity extends ActionBarActivity {
      */
     private void checkForSurvey(Intent intent) {
         String hospitalName = intent.getStringExtra(Constants.KEY_HOSPITAL_NAME);
-        if (hospitalName != null) {
+        String date = intent.getStringExtra(Constants.KEY_DATE);
+        if (hospitalName != null && date != null) {
             Timber.d("Intent was not null");
-            displaySurvey(hospitalName);
+            displaySurvey(hospitalName, date);
         } else {
             SharedPreferences prefs = new SecurePreferences(getApplicationContext());
-            hospitalName = prefs.getString(Constants.KEY_SURVEY, null);
+            hospitalName = prefs.getString(Constants.KEY_PERSISTENT_SURVEY_HOSPITAL, null);
+            date = prefs.getString(Constants.KEY_PERSISTENT_SURVEY_DATE, null);
             if (hospitalName != null) {
                 Timber.d("SharedPrefs --> KEY_SURVEY was not null");
-                displaySurvey(hospitalName);
+                displaySurvey(hospitalName, date);
             }
         }
     }
@@ -95,7 +103,10 @@ public class MainActivity extends ActionBarActivity {
      */
     private void removeSurvey() {
         SharedPreferences prefs = new SecurePreferences(getApplicationContext());
-        prefs.edit().putString(Constants.KEY_SURVEY, null).apply();
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(Constants.KEY_PERSISTENT_SURVEY_HOSPITAL, null);
+        editor.putString(Constants.KEY_PERSISTENT_SURVEY_DATE, null);
+        editor.apply();
     }
 
     public void restartService(View v) {

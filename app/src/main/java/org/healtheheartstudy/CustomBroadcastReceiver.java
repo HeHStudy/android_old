@@ -52,12 +52,17 @@ public class CustomBroadcastReceiver extends BroadcastReceiver {
 
     private void buildNotification(Context context, String hospitalName) {
         // Need to store this in SharedPreferences in case user clears notification
+        String date = AlarmHelper.getCurrentDate();
         SharedPreferences prefs = new SecurePreferences(context.getApplicationContext());
-        prefs.edit().putString(Constants.KEY_SURVEY, hospitalName).apply();
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(Constants.KEY_PERSISTENT_SURVEY_HOSPITAL, hospitalName);
+        editor.putString(Constants.KEY_PERSISTENT_SURVEY_DATE, date);
+        editor.apply();
 
         Intent displayIntent = new Intent(context, MainActivity.class);
         displayIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         displayIntent.putExtra(Constants.KEY_HOSPITAL_NAME, hospitalName);
+        displayIntent.putExtra(Constants.KEY_DATE, date);
         PendingIntent displayPendingIntent = PendingIntent.getActivity(
                 context,
                 0,
@@ -67,8 +72,8 @@ public class CustomBroadcastReceiver extends BroadcastReceiver {
 
         NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.ic_media_pause)
-                .setContentTitle("Health eHeart")
-                .setContentText("We noticed that you're near a hospital and we wanted to make sure you're OK!")
+                .setContentTitle("Health eHeart Study")
+                .setContentText("We noticed that you're near a hospital and would like you to fill out a survey.")
                 .setContentIntent(displayPendingIntent)
                 .setAutoCancel(true)
                 .setVibrate(new long[]{500, 500, 500, 500});

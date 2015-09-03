@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 /**
  * AlarmManager wrapper
  */
@@ -38,6 +41,13 @@ public class AlarmHelper {
                 SystemClock.elapsedRealtime() + triggerAtMillis,
                 intervalMillis,
                 pi);
+    }
+
+    // Returns a date formatted in mm-dd-yyyy (e.g. 05-26-1992)
+    public static String getCurrentDate() {
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy");
+        return df.format(c.getTime());
     }
 
 }
