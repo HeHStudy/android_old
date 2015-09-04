@@ -1,4 +1,4 @@
-<b><u>Testing Hospitalization</u></b>
+<b><u>Testing Hospitalization</u></b><br>
 1. You can add custom 'hospitals' (locations that will trigger the survey) in addHospitalForDebugging() of HospitalizationService.java. There should already be 1 custom hospital, so you can just follow that format to add as many as you'd like. 
 
 2. You'll probably want to change the trigger times so you're not sitting around for 5 hours. You'll want to change <b>Constants.GEOFENCE_LOITER_TIME_MILLIS</b> (amount of time to mark user as hospitalized) and <b>Constants.SURVEY_TRIGGER_MILLIS</b> (amount of time to wait after user exits hospital before displaying survey) in Constants.java.
